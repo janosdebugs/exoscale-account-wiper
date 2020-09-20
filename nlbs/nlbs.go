@@ -2,6 +2,7 @@ package nlbs
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"sync"
 	"time"
@@ -10,11 +11,23 @@ import (
 	apiv2 "github.com/exoscale/egoscale/api/v2"
 )
 
-func (p * Plugin) GetKey() string {
+type Plugin struct {
+	logger log.Logger
+}
+
+func (p *Plugin) GetKey() string {
 	return "instances"
 }
 
-func (p *  Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) GetParameters() map[string]string {
+	return make(map[string]string)
+}
+
+func (p *Plugin) SetParameter(_ string, _ string) error {
+	return fmt.Errorf("NLB deletion has no options")
+}
+
+func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 	log.Printf("deleting NLB's...")
 
 	resp, err := client.RequestWithContext(ctx, egoscale.ListZones{})
@@ -46,11 +59,11 @@ func (p *  Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 
 			nlbId := nlb.ID
 			nlbState := nlb.State
-			go func () {
+			go func() {
 				wg.Add(1)
 				defer wg.Done()
 				poolBlocker <- true
-				defer func() {<- poolBlocker}()
+				defer func() { <-poolBlocker }()
 
 				if nlbState == "Deleting" {
 					log.Printf("NLB %s in zone %s is already being deleted", nlbId, zoneName)
