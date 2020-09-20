@@ -2,23 +2,32 @@ package pools
 
 import (
 	"context"
+	"fmt"
 	"github.com/exoscale/egoscale"
 	"log"
 	"sync"
 	"time"
 )
 
-func (p * Plugin) GetKey() string {
+type Plugin struct {
+	logger log.Logger
+}
+
+func (p *Plugin) GetKey() string {
 	return "instances"
 }
 
-func (p *  Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) GetParameters() map[string]string {
+	return make(map[string]string)
+}
+
+func (p *Plugin) SetParameter(_ string, _ string) error {
+	return fmt.Errorf("instance pool deletion has no options")
+}
+
+func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 	log.Printf("deleting instance pools...")
 
-	resp, err := client.RequestWithContext(ctx, egoscale.ListZones{})
-	if err != nil {
-		return err
-	}
 	var wg sync.WaitGroup
 	poolBlocker := make(chan bool, 10)
 
@@ -29,6 +38,10 @@ func (p *  Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 	default:
 	}
 
+	resp, err := client.RequestWithContext(ctx, egoscale.ListZones{})
+	if err != nil {
+		return err
+	}
 	for _, z := range resp.(*egoscale.ListZonesResponse).Zone {
 		select {
 		case <-ctx.Done():
@@ -54,7 +67,7 @@ func (p *  Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 			go func() {
 				defer wg.Done()
 				poolBlocker <- true
-				defer func() {<-poolBlocker}()
+				defer func() { <-poolBlocker }()
 				log.Printf("deleting instance pool %s...", instancePoolId)
 				var err error = nil
 				if currentState != egoscale.InstancePoolDestroying {
