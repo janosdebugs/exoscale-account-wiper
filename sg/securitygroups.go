@@ -2,13 +2,26 @@ package sg
 
 import (
 	"context"
+	"fmt"
 	"github.com/exoscale/egoscale"
 	"log"
 	"sync"
 )
 
+type Plugin struct {
+	logger log.Logger
+}
+
 func (p *Plugin) GetKey() string {
 	return "sg"
+}
+
+func (p *Plugin) GetParameters() map[string]string {
+	return make(map[string]string)
+}
+
+func (p *Plugin) SetParameter(_ string, _ string) error {
+	return fmt.Errorf("security group deletion has no options")
 }
 
 func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
