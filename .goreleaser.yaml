@@ -1,0 +1,73 @@
+before:
+  hooks:
+    - go test
+builds:
+  - id: main
+    main: main.go
+    binary: "exoscale-account-wiper"
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+archives:
+  - builds:
+      - main
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE.md
+dockers:
+  - goos: linux
+    goarch: amd64
+    binaries:
+      - main
+    image_templates:
+      - "janoszen/{{.ProjectName}}:latest"
+      - "janoszen/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
+      - "janoszen/{{.ProjectName}}:{{ .Tag }}"
+      - "docker.pkg.github.com/janoszen/exoscale-account-wiper/{{.ProjectName}}:latest"
+      - "docker.pkg.github.com/janoszen/exoscale-account-wiper/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
+      - "docker.pkg.github.com/janoszen/exoscale-account-wiper/{{.ProjectName}}:{{ .Tag }}"
+    dockerfile: Dockerfile.goreleaser
+    builds:
+      - main
+    extra_files:
+      - LICENSE.md
+    build_flag_templates:
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+    skip_push: auto
+nfpms:
+  - vendor: Janos Pasztor
+    homepage: https://pasztor.at
+    maintainer: Janos Pasztor <janos@pasztor.at>
+    description: A utility that wipes Exoscale accounts
+    license: MIT
+    builds:
+      - main
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/sbin
+    suggests:
+      - docker
+    files:
+      LICENSE.md: /usr/share/doc/exoscale-account-wiper/LICENSE.md
+source:
+  enabled: true
+  name_template: '{{ .ProjectName }}-{{ .Version }}-source'
+dist: build
+release:
+  github:
+    owner: janoszen
+    name: exoscale-account-wiper
+  prerelease: auto
+  extra_files:
+    - glob: LICENSE.md
