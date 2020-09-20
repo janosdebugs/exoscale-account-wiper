@@ -11,6 +11,9 @@ import (
 )
 
 func TestRemovingInstancePool(t *testing.T) {
+	t.Skip("Test skipped because the teardown fails due to the following bug: https://github.com/exoscale/terraform-provider-exoscale/issues/72")
+	return
+
 	tf := terraform.New(t, "testdata")
 	if tf == nil {
 		// No Terraform integration available
