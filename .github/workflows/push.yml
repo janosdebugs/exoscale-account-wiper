@@ -16,6 +16,9 @@ jobs:
           go-version: 1.14
       - name: Run tests
         run: go test ./...
+        env:
+          EXOSCALE_KEY: ${{ secrets.EXOSCALE_KEY }}
+          EXOSCALE_SECRET: ${{ secrets.EXOSCALE_SECRET }}
       -
         name: Docker login
         uses: azure/docker-login@v1
