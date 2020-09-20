@@ -31,5 +31,5 @@ Optionally, you can pass the following parameters:
 You can also pass the parameters as environment variables:
 
 ```
-NODELETE=1
+DELETE=0
 ```
