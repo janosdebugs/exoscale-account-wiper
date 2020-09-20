@@ -24,8 +24,6 @@ archives:
 dockers:
   - goos: linux
     goarch: amd64
-    binaries:
-      - main
     image_templates:
       - "janoszen/{{.ProjectName}}:latest"
       - "janoszen/{{.ProjectName}}:{{ .Major }}.{{ .Minor }}"
