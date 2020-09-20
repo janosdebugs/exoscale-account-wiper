@@ -8,6 +8,7 @@ import (
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
 	"github.com/janoszen/exoscale-account-wiper/pluginregistry"
 	"github.com/janoszen/exoscale-account-wiper/pools"
+	"github.com/janoszen/exoscale-account-wiper/sg"
 	"log"
 	"os"
 	"strings"
@@ -17,6 +18,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r := pluginregistry.New()
 	r.Register(nlbs.New())
 	r.Register(pools.New())
+	r.Register(sg.New())
 	r.Register(instances.New())
 	return r
 }
@@ -76,7 +78,7 @@ func main() {
 	options := map[string]string{}
 	for {
 		if len(os.Args) >= i {
-			break;
+			break
 		}
 		item := os.Args[i]
 		if item[:2] == "--" {
