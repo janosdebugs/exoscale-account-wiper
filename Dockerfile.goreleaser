@@ -1,6 +1,6 @@
 FROM alpine
 COPY exoscale-account-wiper /
-COPY NOTICE.md /
+COPY LICENSE.md /
 ENTRYPOINT ["/exoscale-account-wiper"]
 CMD []
 USER 1022:1022
