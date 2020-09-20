@@ -4,7 +4,7 @@ This is a simple utility to delete all resources from an Exoscale account. This 
 
 ## Usage
 
-You can download the utility from the [releases section]() for your platform. You can use it from the command line:
+You can download the utility from the [releases section](https://github.com/janoszen/exoscale-account-wiper/releases) for your platform. You can use it from the command line:
 
 ```
 ./exoscale-account-wiper --api-key API-KEY-HERE --api-secret API-SECRET-HERE [OPTIONS]
