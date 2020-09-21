@@ -10,6 +10,7 @@ import (
 	"github.com/janoszen/exoscale-account-wiper/pluginregistry"
 	"github.com/janoszen/exoscale-account-wiper/pools"
 	"github.com/janoszen/exoscale-account-wiper/sg"
+	"github.com/janoszen/exoscale-account-wiper/templates"
 	"log"
 	"os"
 	"strings"
@@ -22,6 +23,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(pools.New())
 	r.Register(sg.New())
 	r.Register(instances.New())
+	r.Register(templates.New())
 	return r
 }
 
@@ -54,6 +56,11 @@ func usage(registry *pluginregistry.PluginRegistry) {
 
 func main() {
 	registry := createRegistry()
+
+	if len(os.Args) > 1 && (os.Args[1] == "-h" || os.Args[1] == "--help") {
+		usage(registry)
+		return
+	}
 
 	envOptions := map[string]string{}
 	environment := os.Environ()
