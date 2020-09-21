@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/exoscale/egoscale v0.33.2
-	github.com/go-log/log v0.2.0
 	github.com/gruntwork-io/terratest v0.30.0
 	github.com/stretchr/testify v1.6.1
 )
