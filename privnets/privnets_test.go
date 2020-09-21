@@ -11,7 +11,7 @@ import (
 )
 
 func TestRemovingPrivnets(t *testing.T) {
-	t.Skip("Skipping test because of Exoscale Terraform provider bug https://github.com/exoscale/terraform-provider-exoscale/issues/73")
+	t.Skip("Skipping test because of Exoscale Terraform provider bug https://github.com/exoscale/terraform-provider-exoscale/issues/76")
 	return
 
 	tf := terraform.New(t, "testdata")
