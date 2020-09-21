@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/aa"
 	"github.com/janoszen/exoscale-account-wiper/eips"
 	"github.com/janoszen/exoscale-account-wiper/instances"
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
@@ -24,6 +25,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(sg.New())
 	r.Register(instances.New())
 	r.Register(templates.New())
+	r.Register(aa.New())
 	return r
 }
 
