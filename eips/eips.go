@@ -34,6 +34,9 @@ func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 
 	for _, ip := range ips {
 		eip := ip.(*egoscale.IPAddress)
+		if !eip.IsElastic {
+			continue
+		}
 		log.Printf("deleting EIP %s...", eip.ID)
 		err := eip.Delete(ctx, client)
 		if err != nil {
