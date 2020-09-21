@@ -101,6 +101,7 @@ func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 		}
 	}
 	wg.Wait()
+	log.Printf("deleted instance pools.")
 
 	return nil
 }
