@@ -12,7 +12,6 @@ import (
 )
 
 type Plugin struct {
-	logger log.Logger
 }
 
 func (p *Plugin) GetKey() string {
