@@ -16,7 +16,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) GetKey() string {
-	return "instances"
+	return "nlbs"
 }
 
 func (p *Plugin) GetParameters() map[string]string {

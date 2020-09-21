@@ -14,7 +14,7 @@ type Plugin struct {
 }
 
 func (p *Plugin) GetKey() string {
-	return "instances"
+	return "pools"
 }
 
 func (p *Plugin) GetParameters() map[string]string {
