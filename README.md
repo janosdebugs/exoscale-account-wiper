@@ -22,14 +22,20 @@ Optionally, you can pass the following parameters:
 - `--[no]sshkeys` to delete or not to delete SSH keys
 - `--[no]nlb` to delete or not to delete network load balancers
 - `--[no]privnet` to delete or not to delete private networks
-- `--[no]sos` to delete or not to delete object storage buckets and objects
-- `--[no]dns` to delete or not to delete DNS zones
-- `--[no]iam` to delete or not to delete IAM API keys
-- `--iam-exclude-self` exclude current API key when deleting IAM API keys
-- `--[no]runstatus` to delete or not to delete runstatus pages
 
 You can also pass the parameters as environment variables:
 
 ```
 DELETE=0
 ```
+
+## Future
+
+The following options are still pending implementation:
+
+- `--[no]sos` to delete or not to delete object storage buckets and objects
+- `--[no]dns` to delete or not to delete DNS zones
+- `--[no]iam` to delete or not to delete IAM API keys
+- `--iam-exclude-self` exclude current API key when deleting IAM API keys
+- `--[no]runstatus` to delete or not to delete runstatus pages
+

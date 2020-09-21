@@ -10,6 +10,7 @@ import (
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
 	"github.com/janoszen/exoscale-account-wiper/pluginregistry"
 	"github.com/janoszen/exoscale-account-wiper/pools"
+	"github.com/janoszen/exoscale-account-wiper/privnets"
 	"github.com/janoszen/exoscale-account-wiper/sg"
 	"github.com/janoszen/exoscale-account-wiper/sshkeys"
 	"github.com/janoszen/exoscale-account-wiper/templates"
@@ -28,6 +29,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(templates.New())
 	r.Register(aa.New())
 	r.Register(sshkeys.New())
+	r.Register(privnets.New())
 	return r
 }
 
