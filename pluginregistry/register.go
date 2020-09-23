@@ -74,7 +74,7 @@ func (r *PluginRegistry) Run(clientFactory *plugin.ClientFactory, ctx context.Co
 		if r.enabledPlugins[p.GetKey()] {
 			err := p.Run(clientFactory, ctx)
 			if err != nil {
-				return err
+				log.Printf("failed to run plugin %s (%v)", p.GetKey(), err)
 			}
 		} else {
 			log.Printf("skipping %s deletion.", p.GetKey())
