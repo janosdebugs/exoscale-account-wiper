@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/exoscale/egoscale"
 	"github.com/janoszen/exoscale-account-wiper/instances"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -18,8 +19,8 @@ func TestRemovingInstances(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
-
-	v1Client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
+	v1Client := clientFactory.GetExoscaleClient()
 	instancePrototype := &egoscale.VirtualMachine{}
 	sgs, err := v1Client.ListWithContext(context.Background(), instancePrototype)
 	if err != nil {
@@ -28,7 +29,7 @@ func TestRemovingInstances(t *testing.T) {
 	assert.Equal(t, 1, len(sgs), fmt.Sprintf("invalid number of instances returned (%d)", len(sgs)))
 
 	i := instances.New()
-	err = i.Run(v1Client, context.Background())
+	err = i.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}

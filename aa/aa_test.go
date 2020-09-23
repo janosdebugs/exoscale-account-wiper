@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/exoscale/egoscale"
 	"github.com/janoszen/exoscale-account-wiper/aa"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -17,8 +18,8 @@ func TestRemovingAntiAffinityGroup(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
-
-	client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
+	client := clientFactory.GetExoscaleClient()
 
 	aas, err := client.RequestWithContext(context.Background(), &egoscale.ListAffinityGroups{})
 	if err != nil {
@@ -27,7 +28,7 @@ func TestRemovingAntiAffinityGroup(t *testing.T) {
 	assert.Equal(t, 1, len(aas.(*egoscale.ListAffinityGroupsResponse).AffinityGroup), "invalid number of AA's returned after initialization (%d)", len(aas.(*egoscale.ListAffinityGroupsResponse).AffinityGroup))
 
 	i := aa.New()
-	err = i.Run(client, context.Background())
+	err = i.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}

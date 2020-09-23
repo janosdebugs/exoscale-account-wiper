@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/exoscale/egoscale"
 	"github.com/janoszen/exoscale-account-wiper/eips"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -17,8 +18,8 @@ func TestRemovingElasticIp(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
-
-	client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
+	client := clientFactory.GetExoscaleClient()
 
 	req := egoscale.IPAddress{}
 	ips, err := client.ListWithContext(context.Background(), &req)
@@ -29,7 +30,7 @@ func TestRemovingElasticIp(t *testing.T) {
 	assert.Equal(t, 1, len(ips), "invalid number of EIP's returned after initialization (%d)", len(ips))
 
 	i := eips.New()
-	err = i.Run(client, context.Background())
+	err = i.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}

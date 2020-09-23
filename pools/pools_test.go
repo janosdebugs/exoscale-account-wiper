@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/pools"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
@@ -11,9 +12,6 @@ import (
 )
 
 func TestRemovingInstancePool(t *testing.T) {
-	t.Skip("Test skipped because the teardown fails due to the following bug: https://github.com/exoscale/terraform-provider-exoscale/issues/72")
-	return
-
 	tf := terraform.New(t, "testdata")
 	if tf == nil {
 		// No Terraform integration available
@@ -21,8 +19,9 @@ func TestRemovingInstancePool(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
 
-	client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	client := clientFactory.GetExoscaleClient()
 
 	resp, err := client.Request(egoscale.ListZones{})
 	if err != nil {
@@ -42,7 +41,7 @@ func TestRemovingInstancePool(t *testing.T) {
 	assert.Equal(t, 1, instancePoolCount, fmt.Sprintf("invalid number of instance pools returned (%d)", instancePoolCount))
 
 	i := pools.New()
-	err = i.Run(client, context.Background())
+	err = i.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}

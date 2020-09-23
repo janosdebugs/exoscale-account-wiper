@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/sg"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
@@ -18,8 +19,9 @@ func TestRemovingSecurityGroups(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
 
-	v1Client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	v1Client := clientFactory.GetExoscaleClient()
 	sgPrototype := &egoscale.SecurityGroup{}
 	sgs, err := v1Client.ListWithContext(context.Background(), sgPrototype)
 	if err != nil {
@@ -28,7 +30,7 @@ func TestRemovingSecurityGroups(t *testing.T) {
 	assert.Equal(t, 2, len(sgs), fmt.Sprintf("invalid number of security groups returned (%d)", len(sgs)))
 
 	securityGroup := sg.New()
-	err = securityGroup.Run(v1Client, context.Background())
+	err = securityGroup.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}

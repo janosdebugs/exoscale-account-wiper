@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/sshkeys"
 	"github.com/janoszen/exoscale-account-wiper/terraform"
 	"github.com/stretchr/testify/assert"
@@ -18,8 +19,9 @@ func TestRemovingSshKeys(t *testing.T) {
 	}
 	tf.Apply()
 	defer tf.Destroy()
+	clientFactory := plugin.NewClientFactory(tf.ExoscaleKey, tf.ExoscaleSecret)
 
-	v1Client := egoscale.NewClient("https://api.exoscale.ch/v1", tf.ExoscaleKey, tf.ExoscaleSecret)
+	v1Client := clientFactory.GetExoscaleClient()
 
 	sshKeys, err := v1Client.ListWithContext(context.Background(), &egoscale.SSHKeyPair{})
 	if err != nil {
@@ -28,7 +30,7 @@ func TestRemovingSshKeys(t *testing.T) {
 	assert.Equal(t, 1, len(sshKeys), fmt.Sprintf("invalid number of SSH Keys returned (%d)", len(sshKeys)))
 
 	sshKeyDeleter := sshkeys.New()
-	err = sshKeyDeleter.Run(v1Client, context.Background())
+	err = sshKeyDeleter.Run(clientFactory, context.Background())
 	if err != nil {
 		t.Fail()
 	}
