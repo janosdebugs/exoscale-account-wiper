@@ -27,6 +27,10 @@ func (c *ClientFactory) GetExoscaleClient() *egoscale.Client {
 	return egoscale.NewClient("https://api.exoscale.ch/v1", c.apiKey, c.apiSecret)
 }
 
+func (c *ClientFactory) GetDnsClient() *egoscale.Client {
+	return egoscale.NewClient("https://api.exoscale.ch/dns", c.apiKey, c.apiSecret)
+}
+
 func (c *ClientFactory) GetExoscaleV2Context(zoneName string, ctx context.Context) context.Context {
 	return apiv2.WithEndpoint(ctx, apiv2.NewReqEndpoint("", zoneName))
 }

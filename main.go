@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/janoszen/exoscale-account-wiper/aa"
+	"github.com/janoszen/exoscale-account-wiper/dns"
 	"github.com/janoszen/exoscale-account-wiper/eips"
 	"github.com/janoszen/exoscale-account-wiper/instances"
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
@@ -32,6 +33,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(sshkeys.New())
 	r.Register(privnets.New())
 	r.Register(sos.New())
+	r.Register(dns.New())
 	return r
 }
 
