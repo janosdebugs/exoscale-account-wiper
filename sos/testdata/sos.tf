@@ -4,7 +4,7 @@ resource "random_id" "bucket" {
 }
 
 resource "aws_s3_bucket" "test" {
-  bucket = "exoscale-account-wiper-test-${lower(random_id.bucket.b64_url)}"
+  bucket = "exoscale-account-wiper-test-${replace(lower(random_id.bucket.b64_url), "_", "")}"
 }
 
 resource "aws_s3_bucket_object" "test" {
