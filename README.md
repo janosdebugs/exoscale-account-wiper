@@ -37,5 +37,5 @@ DELETE=0
 
 The following options are still pending implementation:
 
-- `--[no]runstatus` to delete or not to delete runstatus pages (Blocked by exoscale/cli#228 )
+- `--[no]runstatus` to delete or not to delete runstatus pages (Blocked by [exoscale/cli#228](https://github.com/exoscale/cli/issues/288) )
 
