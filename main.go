@@ -3,41 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/janoszen/exoscale-account-wiper/aa"
-	"github.com/janoszen/exoscale-account-wiper/dns"
-	"github.com/janoszen/exoscale-account-wiper/eips"
-	"github.com/janoszen/exoscale-account-wiper/iam"
-	"github.com/janoszen/exoscale-account-wiper/instances"
-	"github.com/janoszen/exoscale-account-wiper/nlbs"
+	"github.com/janoszen/exoscale-account-wiper/factory"
 	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/pluginregistry"
-	"github.com/janoszen/exoscale-account-wiper/pools"
-	"github.com/janoszen/exoscale-account-wiper/privnets"
-	"github.com/janoszen/exoscale-account-wiper/sg"
-	"github.com/janoszen/exoscale-account-wiper/sos"
-	"github.com/janoszen/exoscale-account-wiper/sshkeys"
-	"github.com/janoszen/exoscale-account-wiper/templates"
 	"log"
 	"os"
 	"strings"
 )
-
-func createRegistry() *pluginregistry.PluginRegistry {
-	r := pluginregistry.New()
-	r.Register(eips.New())
-	r.Register(nlbs.New())
-	r.Register(pools.New())
-	r.Register(sg.New())
-	r.Register(instances.New())
-	r.Register(templates.New())
-	r.Register(aa.New())
-	r.Register(sshkeys.New())
-	r.Register(privnets.New())
-	r.Register(sos.New())
-	r.Register(dns.New())
-	r.Register(iam.New())
-	return r
-}
 
 func usage(registry *pluginregistry.PluginRegistry) {
 	fmt.Printf("Usage: exoscale-account-wiper [OPTIONS]\n")
@@ -67,7 +39,7 @@ func usage(registry *pluginregistry.PluginRegistry) {
 }
 
 func main() {
-	registry := createRegistry()
+	registry := factory.CreateRegistry()
 
 	if len(os.Args) > 1 && (os.Args[1] == "-h" || os.Args[1] == "--help") {
 		usage(registry)
