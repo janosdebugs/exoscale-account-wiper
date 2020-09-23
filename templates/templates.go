@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 	"sync"
 )
@@ -23,9 +24,10 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("template deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting templates...")
 
+	client := clientFactory.GetExoscaleClient()
 	resp, err := client.RequestWithContext(ctx, egoscale.ListZones{})
 	if err != nil {
 		return err

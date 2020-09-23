@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 	"sync"
 )
@@ -23,9 +24,10 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("privnet deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting private networks...")
 
+	client := clientFactory.GetExoscaleClient()
 	var wg sync.WaitGroup
 	poolBlocker := make(chan bool, 10)
 
@@ -54,7 +56,7 @@ func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 			go func() {
 				defer wg.Done()
 				poolBlocker <- true
-				defer func() {<-poolBlocker}()
+				defer func() { <-poolBlocker }()
 
 				log.Printf("deleting private network %s in zone %s...", privnet.ID, zoneName)
 				addrReq := &egoscale.DeleteNetwork{

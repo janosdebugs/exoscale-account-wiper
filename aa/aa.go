@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 )
 
@@ -22,9 +23,10 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("anti-affinity group deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting anti-affinity groups...")
 
+	client := clientFactory.GetExoscaleClient()
 	resp, err := client.RequestWithContext(ctx, &egoscale.ListAffinityGroups{})
 	if err != nil {
 		return fmt.Errorf("failed to list affinity groups (%v)", err)

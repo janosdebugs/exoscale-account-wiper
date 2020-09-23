@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/exoscale/egoscale"
 	"github.com/janoszen/exoscale-account-wiper/aa"
 	"github.com/janoszen/exoscale-account-wiper/eips"
 	"github.com/janoszen/exoscale-account-wiper/instances"
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"github.com/janoszen/exoscale-account-wiper/pluginregistry"
 	"github.com/janoszen/exoscale-account-wiper/pools"
 	"github.com/janoszen/exoscale-account-wiper/privnets"
 	"github.com/janoszen/exoscale-account-wiper/sg"
+	"github.com/janoszen/exoscale-account-wiper/sos"
 	"github.com/janoszen/exoscale-account-wiper/sshkeys"
 	"github.com/janoszen/exoscale-account-wiper/templates"
 	"log"
@@ -30,6 +31,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(aa.New())
 	r.Register(sshkeys.New())
 	r.Register(privnets.New())
+	r.Register(sos.New())
 	return r
 }
 
@@ -44,17 +46,17 @@ func usage(registry *pluginregistry.PluginRegistry) {
 	fmt.Printf("\n")
 	fmt.Printf("Enable/disable plugins:\n")
 	fmt.Printf("  --[no]delete or DELETE=0|1:  Enable or disable deletion modules by default\n")
-	for _, plugin := range registry.GetPlugins() {
-		fmt.Printf("  --[no]%s or %s=0|1:  Enable or disable %s deletion\n", plugin.GetKey(), strings.Replace(strings.ToUpper(plugin.GetKey()), "-", "_", -1), plugin.GetKey())
+	for _, p := range registry.GetPlugins() {
+		fmt.Printf("  --[no]%s or %s=0|1:  Enable or disable %s deletion\n", p.GetKey(), strings.Replace(strings.ToUpper(p.GetKey()), "-", "_", -1), p.GetKey())
 	}
-	for _, plugin := range registry.GetPlugins() {
-		parameters := plugin.GetParameters()
+	for _, p := range registry.GetPlugins() {
+		parameters := p.GetParameters()
 		if len(parameters) > 0 {
 			fmt.Printf("\n")
-			fmt.Printf("%s OPTIONS\n", strings.ToUpper(plugin.GetKey()))
+			fmt.Printf("%s OPTIONS\n", strings.ToUpper(p.GetKey()))
 			fmt.Printf("\n")
 			for param, description := range parameters {
-				fmt.Printf("  --%s-%s or %s_%s: %s\n", plugin.GetKey(), param, strings.ToUpper(plugin.GetKey()), strings.Replace(strings.ToUpper(param), "-", "_", -1), description)
+				fmt.Printf("  --%s-%s or %s_%s: %s\n", p.GetKey(), param, strings.ToUpper(p.GetKey()), strings.Replace(strings.ToUpper(param), "-", "_", -1), description)
 			}
 		}
 	}
@@ -82,17 +84,17 @@ func main() {
 	}
 
 	plugins := registry.GetPlugins()
-	i := 0
+	i := 1
 	enabledPlugins := map[string]*bool{}
-	for plugin := range plugins {
-		enabledPlugins[plugin] = nil
+	for p := range plugins {
+		enabledPlugins[p] = nil
 	}
 	defaultEnabled := true
 	t := true
 	f := false
 	options := map[string]string{}
 	for {
-		if len(os.Args) >= i {
+		if len(os.Args) < i+1 {
 			break
 		}
 		item := os.Args[i]
@@ -169,10 +171,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	v1Client := egoscale.NewClient("https://api.exoscale.ch/v1", exoscaleApiKey, exoscaleApiSecret)
+	clientFactory := plugin.NewClientFactory(exoscaleApiKey, exoscaleApiSecret)
 
 	ctx := context.Background()
-	err = registry.Run(v1Client, ctx)
+	err = registry.Run(clientFactory, ctx)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 )
 
@@ -22,11 +23,11 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("EIP deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting EIP's...")
 
+	client := clientFactory.GetExoscaleClient()
 	req := egoscale.IPAddress{}
-
 	ips, err := client.ListWithContext(ctx, &req)
 	if err != nil {
 		return err

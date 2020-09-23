@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/exoscale/egoscale"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 	"sync"
 	"time"
@@ -24,9 +25,10 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("instance pool deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting instance pools...")
 
+	client := clientFactory.GetExoscaleClient()
 	var wg sync.WaitGroup
 	poolBlocker := make(chan bool, 10)
 

@@ -3,12 +3,12 @@ package nlbs
 import (
 	"context"
 	"fmt"
+	"github.com/janoszen/exoscale-account-wiper/plugin"
 	"log"
 	"sync"
 	"time"
 
 	"github.com/exoscale/egoscale"
-	apiv2 "github.com/exoscale/egoscale/api/v2"
 )
 
 type Plugin struct {
@@ -26,9 +26,10 @@ func (p *Plugin) SetParameter(_ string, _ string) error {
 	return fmt.Errorf("NLB deletion has no options")
 }
 
-func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
+func (p *Plugin) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	log.Printf("deleting NLB's...")
 
+	client := clientFactory.GetExoscaleClient()
 	resp, err := client.RequestWithContext(ctx, egoscale.ListZones{})
 	if err != nil {
 		return err
@@ -43,7 +44,7 @@ func (p *Plugin) Run(client *egoscale.Client, ctx context.Context) error {
 		}
 
 		zoneName := z.Name
-		v2Context := apiv2.WithEndpoint(ctx, apiv2.NewReqEndpoint("", z.Name))
+		v2Context := clientFactory.GetExoscaleV2Context(zoneName, ctx)
 		nlbs, err := client.ListNetworkLoadBalancers(v2Context, z.Name)
 		if err != nil {
 			log.Printf("failed to list NLB's in zone %s (%v)", z.Name, err)

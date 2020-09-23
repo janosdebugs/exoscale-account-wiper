@@ -2,7 +2,6 @@ package plugin
 
 import (
 	"context"
-	"github.com/exoscale/egoscale"
 )
 
 type DeletePlugin interface {
@@ -16,5 +15,5 @@ type DeletePlugin interface {
 	SetParameter(name string, value string) error
 	// Run the deletion process. Will only be called if a deletion of that particular resource is requested. Should
 	// handle failures to delete the resource.
-	Run(client *egoscale.Client, ctx context.Context) error
+	Run(client *ClientFactory, ctx context.Context) error
 }

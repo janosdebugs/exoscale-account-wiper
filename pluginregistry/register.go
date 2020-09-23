@@ -3,18 +3,18 @@ package pluginregistry
 import (
 	"context"
 	"fmt"
-	"github.com/exoscale/egoscale"
 	"github.com/janoszen/exoscale-account-wiper/plugin"
+	"log"
 	"strings"
 )
 
-func (r * PluginRegistry) Register(plugin plugin.DeletePlugin) {
+func (r *PluginRegistry) Register(plugin plugin.DeletePlugin) {
 	r.plugins = append(r.plugins, plugin)
 	r.pluginsByKey[plugin.GetKey()] = plugin
 	r.enabledPlugins[plugin.GetKey()] = true
 }
 
-func (r * PluginRegistry) SetConfiguration(config map[string]string, ignoreErrors bool) error {
+func (r *PluginRegistry) SetConfiguration(config map[string]string, ignoreErrors bool) error {
 	for key, value := range config {
 		var keyParts []string
 		if strings.Contains(key, "_") {
@@ -36,7 +36,7 @@ func (r * PluginRegistry) SetConfiguration(config map[string]string, ignoreError
 				return err
 			}
 		} else if ignoreErrors {
-			continue;
+			continue
 		} else {
 			return fmt.Errorf("invalid configuration option %s, no module named %s", key, module)
 		}
@@ -64,13 +64,20 @@ func (r *PluginRegistry) DisablePlugin(plugin string) error {
 	return nil
 }
 
-func (r * PluginRegistry) Run(v1Client * egoscale.Client, ctx context.Context) error {
+func (r *PluginRegistry) Run(clientFactory *plugin.ClientFactory, ctx context.Context) error {
 	for _, p := range r.plugins {
+		select {
+		case <-ctx.Done():
+			break
+		default:
+		}
 		if r.enabledPlugins[p.GetKey()] {
-			err := p.Run(v1Client, ctx)
+			err := p.Run(clientFactory, ctx)
 			if err != nil {
 				return err
 			}
+		} else {
+			log.Printf("skipping %s deletion.", p.GetKey())
 		}
 	}
 	return nil
