@@ -15,7 +15,7 @@ jobs:
         with:
           go-version: 1.14
       - name: Run tests
-        run: go test ./...
+        run: go test -p 1 ./...
         env:
           EXOSCALE_KEY: ${{ secrets.EXOSCALE_KEY }}
           EXOSCALE_SECRET: ${{ secrets.EXOSCALE_SECRET }}
