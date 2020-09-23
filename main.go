@@ -6,6 +6,7 @@ import (
 	"github.com/janoszen/exoscale-account-wiper/aa"
 	"github.com/janoszen/exoscale-account-wiper/dns"
 	"github.com/janoszen/exoscale-account-wiper/eips"
+	"github.com/janoszen/exoscale-account-wiper/iam"
 	"github.com/janoszen/exoscale-account-wiper/instances"
 	"github.com/janoszen/exoscale-account-wiper/nlbs"
 	"github.com/janoszen/exoscale-account-wiper/plugin"
@@ -34,6 +35,7 @@ func createRegistry() *pluginregistry.PluginRegistry {
 	r.Register(privnets.New())
 	r.Register(sos.New())
 	r.Register(dns.New())
+	r.Register(iam.New())
 	return r
 }
 
@@ -111,12 +113,16 @@ func main() {
 			} else if option == "nodelete" {
 				defaultEnabled = false
 			} else {
-				nextItem := os.Args[i+1]
-				if nextItem[:2] == "--" {
-					options[option] = "0"
+				if len(os.Args) < i+1 {
+					nextItem := os.Args[i+1]
+					if nextItem[:2] == "--" {
+						options[option] = "1"
+					} else {
+						options[option] = nextItem
+						i++
+					}
 				} else {
-					options[option] = nextItem
-					i++
+					options[option] = "1"
 				}
 			}
 		} else {
