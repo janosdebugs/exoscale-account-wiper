@@ -14,11 +14,11 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.14
-      - name: Run tests
-        run: go test -p 1 ./...
-        env:
-          EXOSCALE_KEY: ${{ secrets.EXOSCALE_KEY }}
-          EXOSCALE_SECRET: ${{ secrets.EXOSCALE_SECRET }}
+#      - name: Run tests
+#        run: go test -p 1 ./...
+#        env:
+#          EXOSCALE_KEY: ${{ secrets.EXOSCALE_KEY }}
+#          EXOSCALE_SECRET: ${{ secrets.EXOSCALE_SECRET }}
       -
         name: Docker login
         uses: azure/docker-login@v1
