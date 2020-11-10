@@ -45,5 +45,3 @@ release:
     owner: janoszen
     name: exoscale-account-wiper
   prerelease: auto
-  extra_files:
-    - glob: LICENSE.md
