@@ -39,25 +39,6 @@ dockers:
       - "--label=org.opencontainers.image.revision={{.FullCommit}}"
       - "--label=org.opencontainers.image.version={{.Version}}"
     skip_push: auto
-nfpms:
-  - vendor: Janos Pasztor
-    homepage: https://pasztor.at
-    maintainer: Janos Pasztor <janos@pasztor.at>
-    description: A utility that wipes Exoscale accounts
-    license: MIT
-    builds:
-      - main
-    formats:
-      - deb
-      - rpm
-    bindir: /usr/sbin
-    suggests:
-      - docker
-    files:
-      LICENSE.md: /usr/share/doc/exoscale-account-wiper/LICENSE.md
-source:
-  enabled: true
-  name_template: '{{ .ProjectName }}-{{ .Version }}-source'
 dist: build
 release:
   github:
